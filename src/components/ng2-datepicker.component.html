@@ -1,4 +1,4 @@
-<div [class]="class">
+<div [class]="class" [class.opened]="opened">
   <input type="hidden" [(ngModel)]="viewDate">
   <div class="ui-kit-calendar-input" [class.opened]="opened || expanded" (click)="toggle()">
     <span [class.opened]="opened || expanded">{{ viewDate }}</span>
@@ -20,10 +20,13 @@
       <span>Sun</span>
     </div>
     <div class="ui-kit-calendar-days">
-      <span *ngFor="let d of days; let i = index;" 
-            (click)="selectDate($event, i)"
-            [class.today]="d.today"
-            [class.is-active]="d.selected">
+      <span
+        *ngFor="let d of days; let i = index;"
+        (click)="selectDate($event, i, !d.day)"
+        [class.today]="d.today"
+        [class.is-active]="d.selected"
+        [class.inactive]="!d.day"
+      >
         {{ d.day }}
       </span>
     </div>

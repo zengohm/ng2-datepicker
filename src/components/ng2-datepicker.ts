@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef, forwardRef, OnInit, Input } from '@angular/core';
+import { Component, ViewContainerRef, forwardRef, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import * as moment_ from 'moment';
 
@@ -33,6 +33,11 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
   @Input() format: string;
   @Input() viewFormat: string;
   @Input() firstWeekdaySunday: boolean;
+  @Input() customData: any;
+
+  @Output() emitOpen = new EventEmitter();
+  @Output() emitClose = new EventEmitter();
+  @Output() emitSelect = new EventEmitter();
 
   private date: any = moment();
   private onChange: Function;
@@ -59,17 +64,18 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
   }
 
   ngOnInit() {
-    this.class = `ui-kit-calendar-container ${this.class}`;
+    this.class = `ui-kit-calendar-container ${this.class || ''} ${this.opened || ''}`;
     this.opened = this.opened || false;
     this.format = this.format || 'YYYY-MM-DD';
     this.viewFormat = this.viewFormat || 'D MMMM YYYY';
-    this.firstWeekdaySunday = this.firstWeekdaySunday || false; 
+    this.firstWeekdaySunday = this.firstWeekdaySunday || false;
     setTimeout(() => {
       if (!this.viewDate) {
         let value = moment();
         this.value = value;
         this.onChangeCallback(value.format(this.format));
       }
+      this.date = moment(this.viewDate, this.format);
       this.generateCalendar();
     });
 
@@ -98,10 +104,10 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
     for (let i = n; i <= date.endOf('month').date(); i += 1) {
       let currentDate = moment(`${i}.${month + 1}.${year}`, 'DD.MM.YYYY');
       let today = (moment().isSame(currentDate, 'day') && moment().isSame(currentDate, 'month')) ? true : false;
-      let selected = (selectedDate.isSame(currentDate, 'day')) ? true : false; 
+      let selected = (selectedDate.isSame(currentDate, 'day')) ? true : false;
 
       if (i > 0) {
-        this.days.push({ 
+        this.days.push({
           day: i,
           month: month + 1,
           year: year,
@@ -110,27 +116,30 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
           selected: selected
         });
       } else {
-        this.days.push({ 
+        this.days.push({
           day: null,
           month: null,
           year: null,
           enabled:false,
           today: false,
-          selected: false 
+          selected: false
         });
       }
     }
   }
 
-  selectDate(e: MouseEvent, i: number) {
+  selectDate(e: MouseEvent, i: number, noDay: boolean) {
     e.preventDefault();
-
+    if(noDay) {
+      return;
+    }
     let date: CalendarDate = this.days[i];
     let selectedDate = moment(`${date.day}.${date.month}.${date.year}`, 'DD.MM.YYYY');
     this.value = selectedDate.format(this.format);
     this.viewDate = selectedDate.format(this.viewFormat);
     this.close();
     this.generateCalendar();
+    this.emitSelect.emit(this.value);
   }
 
   prevMonth() {
@@ -156,14 +165,16 @@ export class DatePickerComponent implements ControlValueAccessor, OnInit {
   }
 
   toggle() {
-    this.opened = !this.opened; 
+    this[this.opened ? 'close' : 'open']();
   }
 
   open() {
+    this.emitOpen.emit();
     this.opened = true;
   }
 
   close() {
+    this.emitClose.emit();
     this.opened = false;
   }
 }

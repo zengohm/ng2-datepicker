@@ -1,4 +1,4 @@
-import { ViewContainerRef, OnInit } from '@angular/core';
+import { ViewContainerRef, OnInit, EventEmitter } from '@angular/core';
 import { ControlValueAccessor } from '@angular/forms';
 export declare const CALENDAR_VALUE_ACCESSOR: any;
 export declare class DatePickerComponent implements ControlValueAccessor, OnInit {
@@ -8,6 +8,10 @@ export declare class DatePickerComponent implements ControlValueAccessor, OnInit
     format: string;
     viewFormat: string;
     firstWeekdaySunday: boolean;
+    customData: any;
+    emitOpen: EventEmitter<{}>;
+    emitClose: EventEmitter<{}>;
+    emitSelect: EventEmitter<{}>;
     private date;
     private onChange;
     private onTouched;
@@ -20,7 +24,7 @@ export declare class DatePickerComponent implements ControlValueAccessor, OnInit
     value: any;
     ngOnInit(): void;
     generateCalendar(): void;
-    selectDate(e: MouseEvent, i: number): void;
+    selectDate(e: MouseEvent, i: number, noDay: boolean): void;
     prevMonth(): void;
     nextMonth(): void;
     writeValue(value: any): void;
