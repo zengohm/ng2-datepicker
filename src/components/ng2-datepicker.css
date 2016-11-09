@@ -108,7 +108,7 @@
         cursor: pointer;
         border-radius: 50%; }
         .ui-kit-calendar-container .ui-kit-calendar-cal-container .ui-kit-calendar-days span.today {
-          border: 1px solid #fff; }
+          background: #ccc; }
         .ui-kit-calendar-container .ui-kit-calendar-cal-container .ui-kit-calendar-days span:not(.inactive):hover, .ui-kit-calendar-container .ui-kit-calendar-cal-container .ui-kit-calendar-days span.is-active {
           background: #7323dc;
           color: #fff; }
